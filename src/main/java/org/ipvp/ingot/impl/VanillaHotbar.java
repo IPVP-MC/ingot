@@ -1,6 +1,8 @@
 package org.ipvp.ingot.impl;
 
-import org.bukkit.entity.Player;
+import java.util.Arrays;
+import java.util.List;
+
 import org.ipvp.ingot.Hotbar;
 import org.ipvp.ingot.Slot;
 
@@ -13,20 +15,6 @@ public class VanillaHotbar implements Hotbar {
             slots[i] = new SlotImpl(i);
         }
     }
-    
-    @Override
-    public void apply(Player player) {
-        for (int i = 0 ; i < 9 ; i++) {
-            player.getInventory().setItem(i, getSlot(i).getItem());
-        }
-    }
-
-    @Override
-    public void remove(Player player) {
-        for (int i = 0 ; i < 9 ; i++) {
-            player.getInventory().setItem(i, null);
-        }
-    }
 
     @Override
     public Slot getSlot(int index) {
@@ -34,5 +22,10 @@ public class VanillaHotbar implements Hotbar {
             throw new IllegalArgumentException("index must be between 0-8");
         }
         return slots[index];
+    }
+
+    @Override
+    public List<Slot> getSlots() {
+        return Arrays.asList(slots);
     }
 }

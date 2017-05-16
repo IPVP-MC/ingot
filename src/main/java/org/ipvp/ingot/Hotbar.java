@@ -1,12 +1,10 @@
 package org.ipvp.ingot;
 
-import org.bukkit.entity.Player;
+import java.util.List;
 
 public interface Hotbar {
     
-    void apply(Player player);
-    
-    void remove(Player player);
-    
     Slot getSlot(int index);
+    
+    List<Slot> getSlots();
 }
