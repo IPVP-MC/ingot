@@ -2,6 +2,7 @@ package org.ipvp.ingot;
 
 import org.bukkit.entity.Player;
 
+@FunctionalInterface
 public interface ActionHandler {
     
     enum ActionType {
