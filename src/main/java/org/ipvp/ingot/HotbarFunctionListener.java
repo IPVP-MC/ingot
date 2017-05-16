@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 
 public class HotbarFunctionListener implements Listener {
     
@@ -18,14 +20,23 @@ public class HotbarFunctionListener implements Listener {
         
         // If the player does not have a hotbar set for them we have
         // nothing to handle here.
-        if (hotbar == null) {
+        if (hotbar == null || event.getSlot() < 0) {
             return;
         }
         
+        Inventory top = event.getView().getTopInventory();
         InventoryAction action = event.getAction();
-        int slot = event.getSlot();
-        System.out.print(slot);
+        int raw = event.getRawSlot();
+        int size = top.getSize();
         
+        // Inventory size for a players inventory doesn't include the armor 
+        // slots so we must adjust here
+        if (top.getType() == InventoryType.CRAFTING) {
+            size += 4;
+        }
+        
+        int slot = raw - (27 + size); // Normalize the slot number
+
         switch (action) {
             // Unhandled events that have nothing to do with hotbar interaction
             case DROP_ALL_CURSOR:
@@ -40,14 +51,16 @@ public class HotbarFunctionListener implements Listener {
             case HOTBAR_SWAP:
             case HOTBAR_MOVE_AND_READD:
                 event.setResult(Event.Result.DENY);
+                event.setCancelled(true);
                 break;
             
             // All other actions can be handled as a standard click on an item,
             // we double check to find which slot was clicked
             default:
-                if (slot < 8) {
+                if (slot >= 0 && slot < 9) {
                     passClick(hotbar, slot, player, ActionHandler.ActionType.INVENTORY);
                     event.setResult(Event.Result.DENY);
+                    event.setCancelled(true);
                 }
                 break;
         }
