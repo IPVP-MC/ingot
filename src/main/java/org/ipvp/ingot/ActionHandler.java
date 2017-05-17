@@ -48,7 +48,7 @@ public interface ActionHandler {
      * Called when a player interacts with a hotbar item.
      * 
      * @param player The player that clicked
-     * @param click The type of click performed
+     * @param action The type of action performed
      */
-    void click(Player player, ActionType click);
+    void performAction(Player player, ActionType action);
 }

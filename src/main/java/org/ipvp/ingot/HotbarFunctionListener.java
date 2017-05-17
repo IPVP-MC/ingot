@@ -71,7 +71,7 @@ public class HotbarFunctionListener implements Listener {
         Slot slot = hotbar.getSlot(index);
         Optional<ActionHandler> actionHandlerOptional = slot.getActionHandler();
         if (actionHandlerOptional.isPresent()) {
-            actionHandlerOptional.get().click(who, action);
+            actionHandlerOptional.get().performAction(who, action);
         }
     }
 }
