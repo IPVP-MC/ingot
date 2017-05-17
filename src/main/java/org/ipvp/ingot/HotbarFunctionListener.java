@@ -97,6 +97,7 @@ public class HotbarFunctionListener implements Listener {
         
         // Pass the action to the slot
         passAction(hotbar, slot, player, type);
+        event.setUseItemInHand(Event.Result.DENY);
+        event.setCancelled(true);
     }
-    
 }
