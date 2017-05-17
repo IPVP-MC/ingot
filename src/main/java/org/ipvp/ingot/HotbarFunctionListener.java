@@ -61,7 +61,9 @@ public class HotbarFunctionListener implements Listener {
             // we double check to find which slot was clicked
             default:
                 if (slot >= 0 && slot < 9) {
-                    passAction(hotbar, slot, player, ActionHandler.ActionType.INVENTORY);
+                    ActionHandler.ActionType type = (action == InventoryAction.DROP_ALL_SLOT || action == InventoryAction.DROP_ONE_SLOT)
+                            ? ActionHandler.ActionType.DROP_ITEM : ActionHandler.ActionType.INVENTORY;
+                    passAction(hotbar, slot, player, type);
                     event.setResult(Event.Result.DENY);
                     event.setCancelled(true);
                 }
@@ -96,4 +98,5 @@ public class HotbarFunctionListener implements Listener {
         // Pass the action to the slot
         passAction(hotbar, slot, player, type);
     }
+    
 }
