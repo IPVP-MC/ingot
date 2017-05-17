@@ -11,9 +11,11 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 public class HotbarFunctionListener implements Listener {
     
@@ -115,5 +117,19 @@ public class HotbarFunctionListener implements Listener {
         
         int slot = event.getNewSlot();
         passAction(hotbar, slot, player, ActionHandler.ActionType.HOVER);
+    }
+
+
+    @EventHandler
+    public void handleHotbarDrop(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
+
+        // Don't process if the player has no Hotbar
+        if (hotbar == null) {
+            return;
+        }
+        
+        event.setCancelled(true);
     }
 }
