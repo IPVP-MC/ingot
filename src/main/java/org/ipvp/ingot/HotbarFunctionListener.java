@@ -2,20 +2,22 @@ package org.ipvp.ingot;
 
 import java.util.Optional;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 public class HotbarFunctionListener implements Listener {
     
@@ -77,10 +79,15 @@ public class HotbarFunctionListener implements Listener {
 
     // Passes the action to a player
     private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action) {
+        passAction(hotbar, index, who, action, null);
+    }
+
+    // Passes the action to a player
+    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Entity entity) {
         Slot slot = hotbar.getSlot(index);
         Optional<ActionHandler> actionHandlerOptional = slot.getActionHandler();
         if (actionHandlerOptional.isPresent()) {
-            actionHandlerOptional.get().performAction(who, action);
+            actionHandlerOptional.get().performAction(who, new HotbarAction(action, entity));
         }
     }
     
@@ -102,6 +109,41 @@ public class HotbarFunctionListener implements Listener {
         // Pass the action to the slot
         passAction(hotbar, slot, player, type);
         event.setUseItemInHand(Event.Result.DENY);
+        event.setCancelled(true);
+    }
+    
+    @EventHandler
+    public void handleHotbarUse(PlayerInteractEntityEvent event) {
+        Player player = event.getPlayer();
+        Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
+
+        // Don't process the event if the player has no hotbar
+        if (hotbar == null) {
+            return;
+        }
+
+        Entity clicked = event.getRightClicked();
+        passAction(hotbar, player.getInventory().getHeldItemSlot(), player, ActionHandler.ActionType.RIGHT_CLICK_ENTITY, clicked);
+        event.setCancelled(true);
+    }
+    
+    @EventHandler
+    public void handleHotbarUse(EntityDamageByEntityEvent event) {
+        // Since we are only looking for players with Hotbars, we don't 
+        // want any other attacking entity.
+        if (!(event.getDamager() instanceof Player)) {
+            return;
+        }
+        
+        Player player = (Player) event.getDamager();
+        Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
+        
+        // Don't process the event if the player has no hotbar
+        if (hotbar == null) {
+            return;
+        }
+        
+        passAction(hotbar, player.getInventory().getHeldItemSlot(), player, ActionHandler.ActionType.LEFT_CLICK_ENTITY, event.getEntity());
         event.setCancelled(true);
     }
     

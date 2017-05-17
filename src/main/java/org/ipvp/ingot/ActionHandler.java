@@ -35,16 +35,24 @@ public interface ActionHandler {
          */
         LEFT_CLICK,
         /**
+         * Left clicking an Entity with the item in their hand
+         */
+        LEFT_CLICK_ENTITY,
+        /**
          * Right clicking with the item in their hand
          */
-        RIGHT_CLICK
+        RIGHT_CLICK,
+        /**
+         * Right clicking an Entity with the item in their hand
+         */
+        RIGHT_CLICK_ENTITY
     }
 
     /**
      * Called when a player interacts with a hotbar item.
      * 
      * @param player The player that clicked
-     * @param action The type of action performed
+     * @param action The action performed
      */
-    void performAction(Player player, ActionType action);
+    void performAction(Player player, HotbarAction action);
 }
