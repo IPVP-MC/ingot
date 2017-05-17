@@ -58,7 +58,7 @@ public class HotbarFunctionListener implements Listener {
             // we double check to find which slot was clicked
             default:
                 if (slot >= 0 && slot < 9) {
-                    passClick(hotbar, slot, player, ActionHandler.ActionType.INVENTORY);
+                    passAction(hotbar, slot, player, ActionHandler.ActionType.INVENTORY);
                     event.setResult(Event.Result.DENY);
                     event.setCancelled(true);
                 }
@@ -67,7 +67,7 @@ public class HotbarFunctionListener implements Listener {
     }
 
     // Passes the action to a player
-    private void passClick(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action) {
+    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action) {
         Slot slot = hotbar.getSlot(index);
         Optional<ActionHandler> actionHandlerOptional = slot.getActionHandler();
         if (actionHandlerOptional.isPresent()) {
