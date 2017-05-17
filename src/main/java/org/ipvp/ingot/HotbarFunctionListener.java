@@ -7,9 +7,11 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 
 public class HotbarFunctionListener implements Listener {
@@ -74,5 +76,24 @@ public class HotbarFunctionListener implements Listener {
         if (actionHandlerOptional.isPresent()) {
             actionHandlerOptional.get().performAction(who, action);
         }
+    }
+    
+    @EventHandler
+    public void handleHotbarUse(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
+        
+        // Don't process the event if the player has no hotbar
+        if (hotbar == null || event.getAction() == Action.PHYSICAL) {
+            return;
+        }
+        
+        Action action = event.getAction();
+        int slot = player.getInventory().getHeldItemSlot();
+        ActionHandler.ActionType type = (action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) 
+                ? ActionHandler.ActionType.LEFT_CLICK : ActionHandler.ActionType.RIGHT_CLICK;
+        
+        // Pass the action to the slot
+        passAction(hotbar, slot, player, type);
     }
 }
