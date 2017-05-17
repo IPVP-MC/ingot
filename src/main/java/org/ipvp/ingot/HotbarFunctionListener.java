@@ -45,10 +45,13 @@ public class HotbarFunctionListener implements Listener {
 
         switch (action) {
             // Unhandled events that have nothing to do with hotbar interaction
-            case DROP_ALL_CURSOR:
-            case DROP_ONE_CURSOR:
             case CLONE_STACK:
             case UNKNOWN:
+                break;
+
+            case DROP_ALL_CURSOR:
+            case DROP_ONE_CURSOR:
+                event.setCancelled(true);
                 break;
 
             // Events that we cancel to prevent the addition of other 
@@ -71,6 +74,11 @@ public class HotbarFunctionListener implements Listener {
                     event.setCancelled(true);
                 }
                 break;
+        }
+
+        // Update the players inventory to reflect the cancellation of the event
+        if (event.isCancelled() || event.getResult() == Event.Result.DENY) {
+            player.updateInventory();
         }
     }
 
@@ -128,12 +136,11 @@ public class HotbarFunctionListener implements Listener {
             return;
         }
 
-        ItemStack hand = player.getItemInHand();
+        Slot slot = hotbar.getSlot(player.getInventory().getHeldItemSlot());
         ItemStack drop = event.getItemDrop().getItemStack();
 
-        if (hand != null && hand.isSimilar(drop)) {
-            int slot = player.getInventory().getHeldItemSlot();
-            passAction(hotbar, slot, player, ActionHandler.ActionType.DROP_ITEM);
+        if (slot.getItem() != null && slot.getItem().isSimilar(drop)) {
+            passAction(hotbar, slot.getIndex(), player, ActionHandler.ActionType.DROP_ITEM);
             event.setCancelled(true);
         }
     }
