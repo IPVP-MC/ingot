@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 
 public class HotbarFunctionListener implements Listener {
@@ -99,5 +100,19 @@ public class HotbarFunctionListener implements Listener {
         passAction(hotbar, slot, player, type);
         event.setUseItemInHand(Event.Result.DENY);
         event.setCancelled(true);
+    }
+    
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void hadleHotbarHover(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
+        
+        // Don't process if the player has no hotbar
+        if (hotbar == null) {
+            return;
+        }
+        
+        int slot = event.getNewSlot();
+        passAction(hotbar, slot, player, ActionHandler.ActionType.HOVER);
     }
 }
