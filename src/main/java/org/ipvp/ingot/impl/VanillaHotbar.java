@@ -6,6 +6,9 @@ import java.util.List;
 import org.ipvp.ingot.Hotbar;
 import org.ipvp.ingot.Slot;
 
+/**
+ * A simple Hotbar implementation that can be given to players.
+ */
 public class VanillaHotbar implements Hotbar {
 
     private Slot[] slots = new Slot[9];

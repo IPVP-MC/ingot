@@ -66,6 +66,7 @@ public class HotbarFunctionListener implements Listener {
         }
     }
 
+    // Passes the action to a player
     private void passClick(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action) {
         Slot slot = hotbar.getSlot(index);
         Optional<ActionHandler> actionHandlerOptional = slot.getActionHandler();
