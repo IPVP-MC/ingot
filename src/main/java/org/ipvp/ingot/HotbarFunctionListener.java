@@ -11,7 +11,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
@@ -46,8 +45,6 @@ public class HotbarFunctionListener implements Listener {
             // Unhandled events that have nothing to do with hotbar interaction
             case DROP_ALL_CURSOR:
             case DROP_ONE_CURSOR:
-            case DROP_ALL_SLOT:
-            case DROP_ONE_SLOT:
             case CLONE_STACK:
             case UNKNOWN:
                 break;
@@ -65,7 +62,9 @@ public class HotbarFunctionListener implements Listener {
             // we double check to find which slot was clicked
             default:
                 if (slot >= 0 && slot < 9) {
-                    passAction(hotbar, slot, player, ActionHandler.ActionType.INVENTORY);
+                    ActionHandler.ActionType type = (action == InventoryAction.DROP_ALL_SLOT || action == InventoryAction.DROP_ONE_SLOT)
+                            ? ActionHandler.ActionType.DROP_ITEM : ActionHandler.ActionType.INVENTORY;
+                    passAction(hotbar, slot, player, type);
                     event.setResult(Event.Result.DENY);
                     event.setCancelled(true);
                 }
