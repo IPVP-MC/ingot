@@ -11,11 +11,9 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 public class HotbarFunctionListener implements Listener {
     
@@ -50,16 +48,17 @@ public class HotbarFunctionListener implements Listener {
                 break;
 
             case DROP_ALL_CURSOR:
+            case DROP_ALL_SLOT:
             case DROP_ONE_CURSOR:
+            case DROP_ONE_SLOT:
                 event.setCancelled(true);
                 break;
-
+            
             // Events that we cancel to prevent the addition of other 
             // items into the hotbar
             case COLLECT_TO_CURSOR:
             case HOTBAR_SWAP:
             case HOTBAR_MOVE_AND_READD:
-                event.setResult(Event.Result.DENY);
                 event.setCancelled(true);
                 break;
             
@@ -67,18 +66,10 @@ public class HotbarFunctionListener implements Listener {
             // we double check to find which slot was clicked
             default:
                 if (slot >= 0 && slot < 9) {
-                    ActionHandler.ActionType type = (action == InventoryAction.DROP_ALL_SLOT || action == InventoryAction.DROP_ONE_SLOT)
-                            ? ActionHandler.ActionType.DROP_ITEM : ActionHandler.ActionType.INVENTORY;
-                    passAction(hotbar, slot, player, type);
-                    event.setResult(Event.Result.DENY);
+                    passAction(hotbar, slot, player, ActionHandler.ActionType.INVENTORY);
                     event.setCancelled(true);
                 }
                 break;
-        }
-
-        // Update the players inventory to reflect the cancellation of the event
-        if (event.isCancelled() || event.getResult() == Event.Result.DENY) {
-            player.updateInventory();
         }
     }
 
@@ -124,24 +115,5 @@ public class HotbarFunctionListener implements Listener {
         
         int slot = event.getNewSlot();
         passAction(hotbar, slot, player, ActionHandler.ActionType.HOVER);
-    }
-    
-    @EventHandler
-    public void handleHotbarDrop(PlayerDropItemEvent event) {
-        Player player = event.getPlayer();
-        Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
-
-        // Don't process if the player has no Hotbar
-        if (hotbar == null) {
-            return;
-        }
-
-        Slot slot = hotbar.getSlot(player.getInventory().getHeldItemSlot());
-        ItemStack drop = event.getItemDrop().getItemStack();
-
-        if (slot.getItem() != null && slot.getItem().isSimilar(drop)) {
-            passAction(hotbar, slot.getIndex(), player, ActionHandler.ActionType.DROP_ITEM);
-            event.setCancelled(true);
-        }
     }
 }

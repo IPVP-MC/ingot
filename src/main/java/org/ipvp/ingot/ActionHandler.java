@@ -23,10 +23,6 @@ public interface ActionHandler {
      */
     enum ActionType {
         /**
-         * Dropping the item out of the inventory
-         */
-        DROP_ITEM,
-        /**
          * Holding the item in a players hand
          */
         HOVER,
