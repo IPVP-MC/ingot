@@ -21,6 +21,7 @@ public class ChangeHotbarActionHandler implements ActionHandler {
     public void performAction(Player player, HotbarAction action) {
         if (action.getType() != ActionType.HOVER) {
             HotbarApi.setCurrentHotbar(player, target);
+            player.updateInventory();
         }
     }
 }
