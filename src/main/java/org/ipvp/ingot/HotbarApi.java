@@ -35,8 +35,10 @@ public final class HotbarApi {
      */
     public static void setCurrentHotbar(Player player, Hotbar hotbar) {
         removeCurrentHotbar(player);
-        giveHotbarItems(player, hotbar);
-        playerHotbarMap.put(player, hotbar);
+        if (hotbar != null) {
+            giveHotbarItems(player, hotbar);
+            playerHotbarMap.put(player, hotbar);
+        }
     }
     
     // Removes the current Hotbar of a player
