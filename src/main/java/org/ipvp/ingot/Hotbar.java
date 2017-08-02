@@ -1,12 +1,20 @@
 package org.ipvp.ingot;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A Hotbar is a segment of a players inventory that contains 9 {@link Slot}s. 
  */
 public interface Hotbar {
 
+    /**
+     * Returns the parenting hotbar
+     *
+     * @return The parent hotbar
+     */
+    Optional<Hotbar> getParent();
+    
     /**
      * Returns a slot at a particular index in the Hotbar.
      * 
