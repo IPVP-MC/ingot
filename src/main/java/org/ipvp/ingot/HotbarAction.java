@@ -2,6 +2,7 @@ package org.ipvp.ingot;
 
 import java.util.Optional;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 
 /**
@@ -10,15 +11,21 @@ import org.bukkit.entity.Entity;
 public class HotbarAction {
     
     private final ActionHandler.ActionType type;
-    private final Entity clicked;
+    private Entity clicked;
+    private Block block;
     
     public HotbarAction(ActionHandler.ActionType type) {
-        this(type, null);
+        this.type = type;
     }
     
     public HotbarAction(ActionHandler.ActionType type, Entity clicked) {
-        this.type = type;
+        this(type);
         this.clicked = clicked;
+    }
+    
+    public HotbarAction(ActionHandler.ActionType type, Block block) {
+        this(type);
+        this.block = block;
     }
 
     /**
@@ -40,5 +47,17 @@ public class HotbarAction {
      */
     public Optional<Entity> getClickedEntity() {
         return Optional.ofNullable(clicked);
+    }
+
+    /**
+     * Returns any block involved in the action.
+     * <p>
+     * The returned optional will be present when Action type 
+     * is either LEFT_CLICK or RIGHT_CLICK.
+     * 
+     * @return The clicked block in the action
+     */
+    public Optional<Block> getClickedBlock() {
+        return Optional.ofNullable(block);
     }
 }

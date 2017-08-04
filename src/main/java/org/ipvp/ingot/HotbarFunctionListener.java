@@ -2,6 +2,7 @@ package org.ipvp.ingot;
 
 import java.util.Optional;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -79,15 +80,24 @@ public class HotbarFunctionListener implements Listener {
 
     // Passes the action to a player
     private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action) {
-        passAction(hotbar, index, who, action, null);
+        passAction(hotbar, index, who, new HotbarAction(action));
     }
 
     // Passes the action to a player
     private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Entity entity) {
+        passAction(hotbar, index, who, new HotbarAction(action, entity));
+    }
+
+    // Passes the action to a player
+    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Block block) {
+        passAction(hotbar, index, who, new HotbarAction(action, block));
+    }
+    
+    private void passAction(Hotbar hotbar, int index, Player who, HotbarAction action) {
         Slot slot = hotbar.getSlot(index);
         Optional<ActionHandler> actionHandlerOptional = slot.getActionHandler();
         if (actionHandlerOptional.isPresent()) {
-            actionHandlerOptional.get().performAction(who, new HotbarAction(action, entity));
+            actionHandlerOptional.get().performAction(who, action);
         }
     }
     
@@ -107,7 +117,7 @@ public class HotbarFunctionListener implements Listener {
                 ? ActionHandler.ActionType.LEFT_CLICK : ActionHandler.ActionType.RIGHT_CLICK;
         
         // Pass the action to the slot
-        passAction(hotbar, slot, player, type);
+        passAction(hotbar, slot, player, type, event.getClickedBlock());
         event.setUseItemInHand(Event.Result.DENY);
         event.setCancelled(true);
     }
