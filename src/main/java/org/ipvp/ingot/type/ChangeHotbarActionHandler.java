@@ -1,4 +1,4 @@
-package org.ipvp.ingot.impl;
+package org.ipvp.ingot.type;
 
 import org.bukkit.entity.Player;
 import org.ipvp.ingot.ActionHandler;

@@ -1,4 +1,4 @@
-package org.ipvp.ingot.impl;
+package org.ipvp.ingot.type;
 
 import java.util.Optional;
 

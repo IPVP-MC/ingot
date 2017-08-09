@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.bukkit.entity.Player;
-import org.ipvp.ingot.impl.VanillaHotbar;
+import org.ipvp.ingot.type.VanillaHotbar;
 
 /**
  * Core functions for controlling Hotbar distribution for players.
