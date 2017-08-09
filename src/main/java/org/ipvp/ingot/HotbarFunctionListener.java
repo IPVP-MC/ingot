@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -71,7 +72,7 @@ public class HotbarFunctionListener implements Listener {
             // we double check to find which slot was clicked
             default:
                 if (slot >= 0 && slot < 9) {
-                    passAction(hotbar, slot, player, ActionHandler.ActionType.INVENTORY);
+                    passAction(hotbar, slot, player, ActionHandler.ActionType.INVENTORY, event);
                     event.setCancelled(true);
                 }
                 break;
@@ -79,18 +80,18 @@ public class HotbarFunctionListener implements Listener {
     }
 
     // Passes the action to a player
-    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action) {
-        passAction(hotbar, index, who, new HotbarAction(action));
+    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Cancellable cancellable) {
+        passAction(hotbar, index, who, new HotbarAction(action, cancellable));
     }
 
     // Passes the action to a player
-    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Entity entity) {
-        passAction(hotbar, index, who, new HotbarAction(action, entity));
+    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Cancellable cancellable, Entity entity) {
+        passAction(hotbar, index, who, new HotbarAction(action, cancellable, entity));
     }
 
     // Passes the action to a player
-    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Block block) {
-        passAction(hotbar, index, who, new HotbarAction(action, block));
+    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Cancellable cancellable,  Block block) {
+        passAction(hotbar, index, who, new HotbarAction(action, cancellable, block));
     }
     
     private void passAction(Hotbar hotbar, int index, Player who, HotbarAction action) {
@@ -117,7 +118,7 @@ public class HotbarFunctionListener implements Listener {
                 ? ActionHandler.ActionType.LEFT_CLICK : ActionHandler.ActionType.RIGHT_CLICK;
         
         // Pass the action to the slot
-        passAction(hotbar, slot, player, type, event.getClickedBlock());
+        passAction(hotbar, slot, player, type, event, event.getClickedBlock());
         event.setUseItemInHand(Event.Result.DENY);
         event.setCancelled(true);
     }
@@ -133,7 +134,7 @@ public class HotbarFunctionListener implements Listener {
         }
 
         Entity clicked = event.getRightClicked();
-        passAction(hotbar, player.getInventory().getHeldItemSlot(), player, ActionHandler.ActionType.RIGHT_CLICK_ENTITY, clicked);
+        passAction(hotbar, player.getInventory().getHeldItemSlot(), player, ActionHandler.ActionType.RIGHT_CLICK_ENTITY, event, clicked);
         event.setCancelled(true);
     }
     
@@ -153,7 +154,7 @@ public class HotbarFunctionListener implements Listener {
             return;
         }
         
-        passAction(hotbar, player.getInventory().getHeldItemSlot(), player, ActionHandler.ActionType.LEFT_CLICK_ENTITY, event.getEntity());
+        passAction(hotbar, player.getInventory().getHeldItemSlot(), player, ActionHandler.ActionType.LEFT_CLICK_ENTITY, event, event.getEntity());
         event.setCancelled(true);
     }
     
@@ -168,7 +169,7 @@ public class HotbarFunctionListener implements Listener {
         }
         
         int slot = event.getNewSlot();
-        passAction(hotbar, slot, player, ActionHandler.ActionType.HOVER);
+        passAction(hotbar, slot, player, ActionHandler.ActionType.HOVER, event);
     }
 
 

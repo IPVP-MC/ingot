@@ -4,27 +4,30 @@ import java.util.Optional;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.Cancellable;
 
 /**
  * Represents an action performed with a Hotbar item.
  */
-public class HotbarAction {
+public class HotbarAction implements Cancellable {
     
     private final ActionHandler.ActionType type;
+    private final Cancellable cancellable;
     private Entity clicked;
     private Block block;
     
-    public HotbarAction(ActionHandler.ActionType type) {
+    public HotbarAction(ActionHandler.ActionType type, Cancellable cancellable) {
         this.type = type;
+        this.cancellable = cancellable;
     }
     
-    public HotbarAction(ActionHandler.ActionType type, Entity clicked) {
-        this(type);
+    public HotbarAction(ActionHandler.ActionType type, Cancellable cancellable, Entity clicked) {
+        this(type, cancellable);
         this.clicked = clicked;
     }
     
-    public HotbarAction(ActionHandler.ActionType type, Block block) {
-        this(type);
+    public HotbarAction(ActionHandler.ActionType type, Cancellable cancellable, Block block) {
+        this(type, cancellable);
         this.block = block;
     }
 
@@ -59,5 +62,15 @@ public class HotbarAction {
      */
     public Optional<Block> getClickedBlock() {
         return Optional.ofNullable(block);
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancellable.isCancelled();
+    }
+
+    @Override
+    public void setCancelled(boolean cancel) {
+        cancellable.setCancelled(cancel);
     }
 }
