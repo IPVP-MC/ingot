@@ -45,7 +45,25 @@ public interface ActionHandler {
         /**
          * Right clicking an Entity with the item in their hand
          */
-        RIGHT_CLICK_ENTITY
+        RIGHT_CLICK_ENTITY;
+
+        /**
+         * Returns whether the action is a right click.
+         *
+         * @return true if right click
+         */
+        public boolean isRightClick() {
+            return this == RIGHT_CLICK || this == RIGHT_CLICK_ENTITY;
+        }
+
+        /**
+         * Returns whether the action is a left click.
+         *
+         * @return true if left click
+         */
+        public boolean isLeftClick() {
+            return this == LEFT_CLICK || this == LEFT_CLICK_ENTITY;
+        }
     }
 
     /**
