@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -179,6 +180,21 @@ public class HotbarFunctionListener implements Listener {
         }
         
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void handleHotbarPickup(EntityPickupItemEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
+
+            // Don't process if the player has no hotbar
+            if (hotbar == null) {
+                return;
+            }
+
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
