@@ -1,25 +1,18 @@
 package org.ipvp.ingot;
 
-import java.util.Optional;
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
+
+import java.util.Optional;
 
 public class HotbarFunctionListener implements Listener {
     
@@ -159,7 +152,7 @@ public class HotbarFunctionListener implements Listener {
     }
     
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void hadleHotbarHover(PlayerItemHeldEvent event) {
+    public void handleHotbarHover(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
         Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
         
@@ -180,11 +173,24 @@ public class HotbarFunctionListener implements Listener {
         Player player = event.getPlayer();
         Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
 
-        // Don't process if the player has no Hotbar
+        // Don't process if the player has no hotbar
         if (hotbar == null) {
             return;
         }
         
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void handleHotbarSwap(PlayerSwapHandItemsEvent event) {
+        Player player = event.getPlayer();
+        Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
+
+        // Don't process if the player has no hotbar
+        if (hotbar == null) {
+            return;
+        }
+
         event.setCancelled(true);
     }
 }
