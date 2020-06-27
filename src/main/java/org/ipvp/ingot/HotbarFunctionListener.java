@@ -169,6 +169,8 @@ public class HotbarFunctionListener implements Listener {
         }
         
         int slot = event.getNewSlot();
+        int previousSlot = event.getPreviousSlot();
+        passAction(hotbar, previousSlot, player, ActionHandler.ActionType.UNHOVER, event);
         passAction(hotbar, slot, player, ActionHandler.ActionType.HOVER, event);
     }
 
