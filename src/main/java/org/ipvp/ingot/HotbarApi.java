@@ -55,6 +55,7 @@ public final class HotbarApi {
         for (int slot = 0 ; slot < slots.size() ; slot++) {
             player.getInventory().setItem(slot, slots.get(slot).getItem());
         }
+        player.updateInventory();
     }
     
     private HotbarApi() {
