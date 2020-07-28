@@ -1,10 +1,10 @@
 package org.ipvp.ingot;
 
-import java.util.Optional;
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Cancellable;
+
+import java.util.Optional;
 
 /**
  * Represents an action performed with a Hotbar item.
@@ -15,6 +15,8 @@ public class HotbarAction implements Cancellable {
     private final Cancellable cancellable;
     private Entity clicked;
     private Block block;
+
+    private boolean interactable = false;
     
     public HotbarAction(ActionHandler.ActionType type, Cancellable cancellable) {
         this.type = type;
@@ -64,6 +66,15 @@ public class HotbarAction implements Cancellable {
         return Optional.ofNullable(block);
     }
 
+    /**
+     * Returns whether an item is interactable
+     *
+     * @return true if interactable
+     */
+    public boolean isInteractable() {
+        return interactable;
+    }
+
     @Override
     public boolean isCancelled() {
         return cancellable.isCancelled();
@@ -71,6 +82,7 @@ public class HotbarAction implements Cancellable {
 
     @Override
     public void setCancelled(boolean cancel) {
+        interactable = !cancel;
         cancellable.setCancelled(cancel);
     }
 }

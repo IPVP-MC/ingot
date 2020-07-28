@@ -84,37 +84,39 @@ public class HotbarFunctionListener implements Listener {
     }
 
     // Passes the action to a player
-    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Cancellable cancellable,  Block block) {
-        passAction(hotbar, index, who, new HotbarAction(action, cancellable, block));
+    private HotbarAction passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Cancellable cancellable,  Block block) {
+        HotbarAction hotbarAction = new HotbarAction(action, cancellable, block);
+        passAction(hotbar, index, who, hotbarAction);
+        return hotbarAction;
     }
     
     private void passAction(Hotbar hotbar, int index, Player who, HotbarAction action) {
         Slot slot = hotbar.getSlot(index);
         Optional<ActionHandler> actionHandlerOptional = slot.getActionHandler();
-        if (actionHandlerOptional.isPresent()) {
-            actionHandlerOptional.get().performAction(who, action);
-        }
+        actionHandlerOptional.ifPresent(actionHandler -> actionHandler.performAction(who, action));
     }
     
     @EventHandler
     public void handleHotbarUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
-        
+
         // Don't process the event if the player has no hotbar
         if (hotbar == null || event.getAction() == Action.PHYSICAL) {
             return;
         }
-        
+
         Action action = event.getAction();
         int slot = player.getInventory().getHeldItemSlot();
-        ActionHandler.ActionType type = (action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) 
+        ActionHandler.ActionType type = (action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR)
                 ? ActionHandler.ActionType.LEFT_CLICK : ActionHandler.ActionType.RIGHT_CLICK;
-        
+
         // Pass the action to the slot
-        passAction(hotbar, slot, player, type, event, event.getClickedBlock());
-        event.setUseItemInHand(Event.Result.DENY);
-        event.setCancelled(true);
+        HotbarAction hotbarAction = passAction(hotbar, slot, player, type, event, event.getClickedBlock());
+        if (!hotbarAction.isInteractable()) { // Allow actions to determine whether it should be cancelled
+            event.setCancelled(true);
+            event.setUseInteractedBlock(Event.Result.DENY);
+        }
     }
     
     @EventHandler
