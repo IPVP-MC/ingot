@@ -27,6 +27,10 @@ public interface ActionHandler {
          */
         HOVER,
         /**
+         * Previous hovering item in a players hand
+         */
+        UNHOVER,
+        /**
          * Clicking on the item inside an inventory
          */
         INVENTORY,

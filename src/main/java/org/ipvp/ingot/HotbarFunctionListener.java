@@ -1,25 +1,19 @@
 package org.ipvp.ingot;
 
-import java.util.Optional;
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
+
+import java.util.Optional;
 
 public class HotbarFunctionListener implements Listener {
     
@@ -90,37 +84,39 @@ public class HotbarFunctionListener implements Listener {
     }
 
     // Passes the action to a player
-    private void passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Cancellable cancellable,  Block block) {
-        passAction(hotbar, index, who, new HotbarAction(action, cancellable, block));
+    private HotbarAction passAction(Hotbar hotbar, int index, Player who, ActionHandler.ActionType action, Cancellable cancellable,  Block block) {
+        HotbarAction hotbarAction = new HotbarAction(action, cancellable, block);
+        passAction(hotbar, index, who, hotbarAction);
+        return hotbarAction;
     }
     
     private void passAction(Hotbar hotbar, int index, Player who, HotbarAction action) {
         Slot slot = hotbar.getSlot(index);
         Optional<ActionHandler> actionHandlerOptional = slot.getActionHandler();
-        if (actionHandlerOptional.isPresent()) {
-            actionHandlerOptional.get().performAction(who, action);
-        }
+        actionHandlerOptional.ifPresent(actionHandler -> actionHandler.performAction(who, action));
     }
     
     @EventHandler
     public void handleHotbarUse(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
-        
+
         // Don't process the event if the player has no hotbar
         if (hotbar == null || event.getAction() == Action.PHYSICAL) {
             return;
         }
-        
+
         Action action = event.getAction();
         int slot = player.getInventory().getHeldItemSlot();
-        ActionHandler.ActionType type = (action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR) 
+        ActionHandler.ActionType type = (action == Action.LEFT_CLICK_BLOCK || action == Action.LEFT_CLICK_AIR)
                 ? ActionHandler.ActionType.LEFT_CLICK : ActionHandler.ActionType.RIGHT_CLICK;
-        
+
         // Pass the action to the slot
-        passAction(hotbar, slot, player, type, event, event.getClickedBlock());
-        event.setUseItemInHand(Event.Result.DENY);
-        event.setCancelled(true);
+        HotbarAction hotbarAction = passAction(hotbar, slot, player, type, event, event.getClickedBlock());
+        if (!hotbarAction.isInteractable()) { // Allow actions to determine whether it should be cancelled
+            event.setCancelled(true);
+            event.setUseInteractedBlock(Event.Result.DENY);
+        }
     }
     
     @EventHandler
@@ -159,7 +155,7 @@ public class HotbarFunctionListener implements Listener {
     }
     
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void hadleHotbarHover(PlayerItemHeldEvent event) {
+    public void handleHotbarHover(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
         Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
         
@@ -169,6 +165,8 @@ public class HotbarFunctionListener implements Listener {
         }
         
         int slot = event.getNewSlot();
+        int previousSlot = event.getPreviousSlot();
+        passAction(hotbar, previousSlot, player, ActionHandler.ActionType.UNHOVER, event);
         passAction(hotbar, slot, player, ActionHandler.ActionType.HOVER, event);
     }
 
@@ -178,11 +176,39 @@ public class HotbarFunctionListener implements Listener {
         Player player = event.getPlayer();
         Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
 
-        // Don't process if the player has no Hotbar
+        // Don't process if the player has no hotbar
         if (hotbar == null) {
             return;
         }
         
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void handleHotbarPickup(EntityPickupItemEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
+
+            // Don't process if the player has no hotbar
+            if (hotbar == null) {
+                return;
+            }
+
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void handleHotbarSwap(PlayerSwapHandItemsEvent event) {
+        Player player = event.getPlayer();
+        Hotbar hotbar = HotbarApi.getCurrentHotbar(player);
+
+        // Don't process if the player has no hotbar
+        if (hotbar == null) {
+            return;
+        }
+
         event.setCancelled(true);
     }
 }

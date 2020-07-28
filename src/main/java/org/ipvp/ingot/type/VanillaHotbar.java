@@ -1,11 +1,11 @@
 package org.ipvp.ingot.type;
 
+import org.ipvp.ingot.Hotbar;
+import org.ipvp.ingot.Slot;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import org.ipvp.ingot.Hotbar;
-import org.ipvp.ingot.Slot;
 
 /**
  * A simple Hotbar implementation that can be given to players.
